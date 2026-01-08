@@ -1,0 +1,52 @@
+# ============================================================
+# Codex Configuration File
+# ============================================================
+
+# Root directory Codex is allowed to access
+workspace = "/home/mirek/sandbox/agenticsa"
+
+# Whether Codex may execute shell commands
+allow_shell = true
+
+# ============================================================
+# MCP (Model Context Protocol) Configuration
+# ============================================================
+
+[mcp]
+# Enable MCP support
+enabled = true
+
+# Default timeout (in milliseconds) for MCP calls
+timeout_ms = 30000
+
+# ============================================================
+# MCP Servers
+# ============================================================
+
+[[mcp.servers]]
+name = "cpptest-sa"
+description = "Static analysis data"
+transport = "stdio"
+command = "/home/mirek/parasoft/cpptest_standard_2025_2/integration/mcp/cpptestmcp"
+args = []
+
+# ============================================================
+# Security and Capability Controls
+# ============================================================
+
+[mcp.capabilities]
+# Allow MCP servers to return large payloads
+max_response_bytes = 10_000_000
+
+# Restrict which tools Codex can call
+allowed_tools = [
+  "cpptest-sa"
+]
+
+# ============================================================
+# Logging
+# ============================================================
+
+[logging]
+level = "info"
+file = "/home/user/.codex/logs/codex.log"
