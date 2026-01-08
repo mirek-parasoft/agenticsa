@@ -23,7 +23,8 @@ timeout_ms = 30000
 # MCP Servers
 # ============================================================
 
-[[mcp.servers]]
+[mcp.servers]
+[mcp_servers.cpptest-sa]
 name = "cpptest-sa"
 description = "Static analysis data"
 transport = "stdio"
@@ -38,10 +39,6 @@ args = []
 # Allow MCP servers to return large payloads
 max_response_bytes = 10_000_000
 
-# Restrict which tools Codex can call
-allowed_tools = [
-  "cpptest-sa"
-]
 
 # ============================================================
 # Logging
