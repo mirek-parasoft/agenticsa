@@ -51,8 +51,8 @@ jobs:
       shell: bash
       run: |
         set -euo pipefail
-        ANALYZER_CMD=("cpptestcli" "-fail" "-compiler" "gcc_13-64" "-config" "MISRA C++ and CERT.properties" "-report" "reports" "-exclude" "*/build/*" "-exclude" "*/*_test.*" "-module" "." "-input" "build/compile_commands.json")  # customize
-        MAX_PASSES="${MAX_PASSES:-1}"
+        ANALYZER_CMD=("cpptestcli" "-fail" "-compiler" "gcc_13-64" "-config" "MISRA C++ and CERT.properties" "-property" "report.format=html,sarif" "-report" "reports" "-exclude" "*/build/*" "-exclude" "*/*_test.*" "-module" "." "-input" "build/compile_commands.json")  # customize
+        MAX_PASSES="${MAX_PASSES:-3}"
 
         # Ensure we are in a git repo (Codex safety requirement unless you bypass explicitly).
         git rev-parse --is-inside-work-tree >/dev/null  2>&1 || { echo "Not inside a git repository. Exiting."; exit 1; }
@@ -76,9 +76,13 @@ jobs:
 
         for pass in $(seq 1 "$MAX_PASSES"); do
           echo "== Static analysis pass $pass/$MAX_PASSES ==" >&2
+          
+          # Ensure clean reports directory
+          rm -fr reports
+          mkdir -p reports
 
-          report="$(mktemp)"
-          if run_analysis "$report"; then
+          log_file="$(mktemp)"
+          if run_analysis "$log_file"; then
             echo "No violations found." >&2
             exit 0
           fi
@@ -105,7 +109,7 @@ jobs:
         exit 1
 
     - name: Upload results (SARIF)
-      if: always()
+      if: failure()
       uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: reports/report.sarif
