@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ANALYZER_CMD=("cpptestcli" "-fail" "-compiler" "gcc_13-64" "-config" "/home/mirek/sandbox/agenticsa/MISRA C++ and CERT.properties" "-report" "/home/mirek/sandbox/agenticsa/reports" "-resource" "/home/mirek/sandbox/agenticsa" "-exclude" "*/.build/*" "-exclude" "*/*_test.*" "-module" "." "-input" ".build/compile_commands.json")  # customize
+ANALYZER_CMD=("cpptestcli" "-fail" "-compiler" "gcc_13-64" "-config" "MISRA C++ and CERT.properties" "-report" "reports" "-exclude" "*/.build/*" "-exclude" "*/*_test.*" "-module" "." "-input" ".build/compile_commands.json")  # customize
 MAX_PASSES="${MAX_PASSES:-1}"
 
 # Ensure we are in a git repo (Codex safety requirement unless you bypass explicitly).
