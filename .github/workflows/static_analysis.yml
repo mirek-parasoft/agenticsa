@@ -58,7 +58,7 @@ jobs:
         # Uncomment if you are using C/C++test 2020.2 to generate a SARIF report:
         # reportFormat: xml,html,custom
         testConfig: 'MISRA C++ and CERT.properties'
-        additionalParams: '-fail'
+        additionalParams: '-fail -exclude */build/* -exclude */*_test.* -module .'
 
     - name: Upload results (SARIF)
       if: always()
