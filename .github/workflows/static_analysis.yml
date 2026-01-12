@@ -1,0 +1,75 @@
+name: CMake
+
+on:
+  # Triggers the workflow on push or pull request events but only for the master (main) branch.
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  BUILD_TYPE: Release
+
+  
+jobs:
+  build_with_misra:
+    runs-on: self-hosted
+    continue-on-error: true
+
+    permissions:
+      security-events: write
+      actions: write
+      contents: write
+      pages: write
+      id-token: write
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Create Build Environment
+      # Some projects don't allow in-source building, so create a separate build directory
+      # We'll use this as our working directory for all subsequent commands
+      run: cmake -E make_directory ${{github.workspace}}/build
+   
+    - name: Configure CMake
+      # Use a bash shell so we can use the same syntax for environment variable
+      # access regardless of the host operating system
+      shell: bash
+      working-directory: ${{github.workspace}}
+      # Note the current convention is to use the -S and -B options here to specify source 
+      # and build directories, but this is only available with CMake 3.13 and higher.  
+      # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
+      run: cmake -Bbuild -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+
+    - name: Build 
+      working-directory: ${{github.workspace}}
+      shell: bash
+      # Execute the build.  You can specify a specific target with "--target <NAME>"
+      run: cmake --build build -- VERBOSE=ON
+
+    - name: MISRA C 2023 Quality Gate
+      # Use the 'run-cpptest-action' GitHub action.
+      uses: parasoft/run-cpptest-action@2.0.1
+      # Optional parameters for 'run-cpptest-action'.
+      with:
+        # For CMake-based projects, use a compile_commands.json file as the input for analysis. 
+        input: build/compile_commands.json
+        compilerConfig: gcc_13-64
+        # Uncomment if you are using C/C++test 2020.2 to generate a SARIF report:
+        # reportFormat: xml,html,custom
+        testConfig: 'MISRA C++ and CERT.properties'
+        additionalParams: '-fail -settings dtp.settings -publish -property build.id=${{ env.build_id }}'
+
+    - name: Upload results (SARIF)
+      if: always()
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: reports/report.sarif
+
+    # Uploads an archive that includes all report files (.xml, .html, .sarif).
+    - name: Archive reports
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: CpptestReports
+        path: reports/*.*
