@@ -1,0 +1,38 @@
+[
+{
+  "directory": "/home/mirek/actions-runner/_work/agenticsa/agenticsa/build",
+  "command": "/usr/bin/c++  -isystem /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest/include -isystem /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest -std=gnu++17 -o CMakeFiles/goo_test.dir/goo_test.cpp.o -c /home/mirek/actions-runner/_work/agenticsa/agenticsa/goo_test.cpp",
+  "file": "/home/mirek/actions-runner/_work/agenticsa/agenticsa/goo_test.cpp",
+  "output": "CMakeFiles/goo_test.dir/goo_test.cpp.o"
+},
+{
+  "directory": "/home/mirek/actions-runner/_work/agenticsa/agenticsa/build",
+  "command": "/usr/bin/c++  -isystem /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest/include -isystem /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest -std=gnu++17 -o CMakeFiles/goo_test.dir/goo.cpp.o -c /home/mirek/actions-runner/_work/agenticsa/agenticsa/goo.cpp",
+  "file": "/home/mirek/actions-runner/_work/agenticsa/agenticsa/goo.cpp",
+  "output": "CMakeFiles/goo_test.dir/goo.cpp.o"
+},
+{
+  "directory": "/home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-build/googlemock",
+  "command": "/usr/bin/c++  -I/home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googlemock/include -I/home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googlemock -isystem /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest/include -isystem /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest -std=c++17 -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o CMakeFiles/gmock.dir/src/gmock-all.cc.o -c /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googlemock/src/gmock-all.cc",
+  "file": "/home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googlemock/src/gmock-all.cc",
+  "output": "_deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o"
+},
+{
+  "directory": "/home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-build/googlemock",
+  "command": "/usr/bin/c++  -isystem /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googlemock/include -isystem /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googlemock -isystem /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest/include -isystem /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest -std=c++17 -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o CMakeFiles/gmock_main.dir/src/gmock_main.cc.o -c /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googlemock/src/gmock_main.cc",
+  "file": "/home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googlemock/src/gmock_main.cc",
+  "output": "_deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o"
+},
+{
+  "directory": "/home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-build/googletest",
+  "command": "/usr/bin/c++  -I/home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest/include -I/home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest -std=c++17 -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o CMakeFiles/gtest.dir/src/gtest-all.cc.o -c /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest/src/gtest-all.cc",
+  "file": "/home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest/src/gtest-all.cc",
+  "output": "_deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o"
+},
+{
+  "directory": "/home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-build/googletest",
+  "command": "/usr/bin/c++  -isystem /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest/include -isystem /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest -std=c++17 -Wall -Wshadow -Wundef -Wno-error=dangling-else -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -o CMakeFiles/gtest_main.dir/src/gtest_main.cc.o -c /home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest/src/gtest_main.cc",
+  "file": "/home/mirek/actions-runner/_work/agenticsa/agenticsa/build/_deps/googletest-src/googletest/src/gtest_main.cc",
+  "output": "_deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o"
+}
+]
