@@ -1,0 +1,5 @@
+if(EXISTS "/home/mirek/actions-runner/_work/agenticsa/agenticsa/build/goo_test[1]_tests.cmake")
+  include("/home/mirek/actions-runner/_work/agenticsa/agenticsa/build/goo_test[1]_tests.cmake")
+else()
+  add_test(goo_test_NOT_BUILT goo_test_NOT_BUILT)
+endif()
