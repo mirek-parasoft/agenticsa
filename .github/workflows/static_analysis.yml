@@ -2,8 +2,8 @@ name: CMake
 
 on:
   # Triggers the workflow on push or pull request events but only for the master (main) branch.
-pull_request:
-    branches: [ master, main ]
+  pull_request:
+    branches: [ main ]
 
 env:
   BUILD_TYPE: Release
@@ -108,6 +108,7 @@ jobs:
 
     - name: Create AI-fix branch, commit, push, and open PR into contributor branch
       id: ai_fix_pr
+      if : failure()
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
