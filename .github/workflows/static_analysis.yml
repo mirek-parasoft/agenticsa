@@ -179,7 +179,7 @@ jobs:
         echo "fix_branch=$FIX_BRANCH" >> "$GITHUB_OUTPUT"
         echo "fix_pr_url=$FIX_PR_URL" >> "$GITHUB_OUTPUT"
 
-    - name: Upload results (SARIF)
+    - name: Upload SARIF results
       if: failure()
       uses: github/codeql-action/upload-sarif@v4
       with:
