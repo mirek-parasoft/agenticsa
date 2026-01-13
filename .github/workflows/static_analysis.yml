@@ -108,7 +108,7 @@ jobs:
 
     - name: Create AI-fix branch, commit, push, and open PR into contributor branch
       id: ai_fix_pr
-      if : failure()
+      if: always()
       shell: bash
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
