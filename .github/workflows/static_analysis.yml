@@ -47,11 +47,18 @@ jobs:
     
     - name: Static Analysis
       working-directory: ${{github.workspace}}
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        REPO: ${{ github.repository }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
       shell: bash
       run: |
         set -euo pipefail
         ANALYZER_CMD=("cpptestcli" "-fail" "-compiler" "gcc_13-64" "-config" "MISRA C++ and CERT.properties" "-property" "report.format=html,sarif" "-report" "reports" "-exclude" "*/build/*" "-exclude" "*/*_test.*" "-module" "." "-input" "build/compile_commands.json")  # customize
         MAX_PASSES="${MAX_PASSES:-3}"
+        BRANCH_CREATED=false
 
         # Ensure we are in a git repo (Codex safety requirement unless you bypass explicitly).
         git rev-parse --is-inside-work-tree >/dev/null  2>&1 || { echo "Not inside a git repository. Exiting."; exit 1; }
@@ -59,6 +66,30 @@ jobs:
         # Ensure clean start
         rm -fr reports
         mkdir -p reports
+        
+        #Skip the step if there is no possiblity to push changes back (i.e., forked PR)
+        if [[ "$HEAD_REPO" != "$BASE_REPO" ]]; then
+          echo "Fork PR detected ($HEAD_REPO). 
+          echo "Wont be able to preserv modified code. Skipping Static analysis and AI fixes."
+          echo "created=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        # Function to create a branch for AI fixes
+        create_fix_branch() {
+          # Gate: only run for same-repo PRs (avoid forks)
+          HEAD_REPO="${{ github.event.pull_request.head.repo.full_name }}"
+          BASE_REPO="${{ github.repository }}"
+  
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          SHORT_SHA="${PR_HEAD_SHA:0:7}"
+          FIX_BRANCH="ai-fix/pr-${PR_NUMBER}/${SHORT_SHA}"
+          echo "Creating fix branch: $FIX_BRANCH"
+          # Create a branch from the checked out PR HEAD
+          git switch -c "$FIX_BRANCH"
+        }
 
         # Function to run the analysis
         run_analysis() {
@@ -88,25 +119,107 @@ jobs:
 
           echo "Violations detected; invoking Codex..." >&2
 
-          prompt_file="$(mktemp)"
-          {
-            echo "Please pull the C/C++test violations using the dedicated mcp tool."
-            echo "Use available mcp tools to understand violated static analysis rules."
-            echo "Your task is to edit the files with problems and fix all violations reported by C/C++test."
-            echo "Do not attempt to build, run the project or run C/C++test static analysis!" 
-            echo "Make the smallest changes possible to fix the reported violations."
-            echo ""
-          } > "$prompt_file"
+          # Extract violated rules from the report
+          XML_PATH=reports/report.xml  # adjust if your report is generated elsewhere
+          PY_SCRIPT=".github/workflows/tools/list_violated_rules.py"   # adjust if your python script lives elsewhere
 
-          # Run Codex with write access to the workspace.
-          # --full-auto is a convenience preset; you can use --sandbox workspace-write explicitly.
-          codex exec --full-auto --sandbox workspace-write "$(cat "$prompt_file")"
-          #rm -f "$report" "$prompt_file"
+          rules_csv="$("python3" "$PY_SCRIPT" "$XML_PATH")"
+
+          # If there are no rules, exit cleanly.
+          if [[ -z "${rules_csv}" ]]; then
+            echo "No violated rules found."
+            exit 0
+          fi
+
+          IFS=',' read -r -a rules <<< "$rules_csv"
+
+          for rule in "${rules[@]}"; do
+            echo "Invoking Codex to fix $rule violations"
+          
+
+            prompt_file="$(mktemp)"
+            {
+              echo "Please pull the C/C++test violations using the dedicated mcp tool."
+              echo "Please analyze only the violations of the following rule: $rule"
+              echo "Use available mcp tools to understand violated static analysis rule."
+              echo "Your task is to edit the files with problems and fix all violations of the $rule reported by C/C++test."
+              echo "Do not analyze or fix other rules violations.""
+              echo "Do not attempt to build, run the project or run C/C++test static analysis!" 
+              echo "Make the smallest changes possible to fix the reported violations."
+              echo "Once you are done, please create a commit comment with a concise message summarizing the changes made to fix the violations."
+              echo "Please put the commit comment in a file named $rule_commit_comment.txt"
+            } > "$prompt_file"
+
+            # Run Codex with write access to the workspace.
+            # --full-auto is a convenience preset; you can use --sandbox workspace-write explicitly.
+            codex exec --full-auto --sandbox workspace-write "$(cat "$prompt_file")"
+
+            # If AI made no changes, skip
+            if ! git diff --quiet || ! git diff --cached --quiet; then
+              echo "AI changes detected for $rule violations. Proceeding to publish."
+              echo "created=false" >> "$GITHUB_OUTPUT"
+
+              # Create the fix branch only once
+              if [[ "$BRANCH_CREATED" == false ]]; then
+                echo "Creating AI fix branch."
+                create_fix_branch
+                BRANCH_CREATED=true
+              fi
+              
+              git add -A
+              git commit -F $rule_commit_comment.txt
+
+              # Cleanup temporary files for the iteration
+              rm -f "$prompt_file" "$rule_commit_comment.txt"
+
+            else
+              echo "No AI changes detected for the $rule violations."
+            fi  
+          done
         done
 
-        echo "Violations still present after $MAX_PASSES Codex passes." >&2
-        exit 1
+        # If any AI changes were made, push branch and create PR
+        if [[ "$BRANCH_CREATED" == true ]]; then
+          echo "Pushing AI fix branch and creating PR."      
 
+          git push --set-upstream origin "$FIX_BRANCH"
+
+          # Create (or reuse) a PR from FIX_BRANCH -> PR_HEAD_REF
+          # This produces a separate "AI fix PR" that the developer can merge into their PR branch.
+          TITLE="AI fixes for static analysis (PR #${PR_NUMBER})"
+          BODY=$'This PR contains AI-generated fixes for static analysis violations detected in the original PR.\n\nReview carefully before merging.\n\nIntegration options:\n- Merge this PR into your branch\n- Or cherry-pick the commit(s)\n'
+
+          # If a PR already exists for this head branch, reuse it
+          existing_url="$(gh pr list --repo "$REPO" --head "$FIX_BRANCH" --json url --jq '.[0].url' || true)"
+          if [[ -n "${existing_url}" ]]; then
+            FIX_PR_URL="$existing_url"
+          else
+            FIX_PR_URL="$(gh pr create \
+              --repo "$REPO" \
+              --head "$FIX_BRANCH" \
+              --base "$PR_HEAD_REF" \
+              --title "$TITLE" \
+              --body "$BODY")"
+          fi
+        
+          # Comment on the original PR with the AI-fix PR link
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body \
+            "Static analysis violations were auto-fixed by an AI assistant. An **AI-fix PR** was created for review and easy integration: $FIX_PR_URL To integrate: merge that PR into your branch (or cherry-pick its commit[s]), then re-run CI."
+
+          echo "created=true" >> "$GITHUB_OUTPUT"
+          echo "fix_branch=$FIX_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "fix_pr_url=$FIX_PR_URL" >> "$GITHUB_OUTPUT"
+        fi
+        
+        # Final analysis to check if violations remain
+        if run_analysis "$log_file"; then
+          echo "All violations fixed after $pass passes." >&2
+          exit 0
+        else
+          echo "Violations still present after pass $pass." >&2
+          exit 1
+        fi
+        
     - name: Create AI-fix branch, commit, push, and open PR into contributor branch
       id: ai_fix_pr
       if: always()
