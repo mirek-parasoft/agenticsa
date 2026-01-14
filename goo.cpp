@@ -25,6 +25,10 @@ int computeControl(const int sensor, const int divisor)
 {
     const int value = 0;
 
+    if (divisor == 0) {
+        return DEFAULT_VALUE;
+    }
+
     if (sensor > SENSOR_HIGH_THRESHOLD) {
         return sensor / divisor;
     } else if (sensor > SENSOR_LOW_THRESHOLD) {
