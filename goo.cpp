@@ -23,7 +23,7 @@ void setMotorSpeed(const uint16_t speed)
 
 int computeControl(const int sensor, const int divisor)
 {
-    int value = 0;
+    const int value = 0;
 
     if (sensor > SENSOR_HIGH_THRESHOLD) {
         return sensor / divisor;
@@ -38,7 +38,7 @@ int computeControl(const int sensor, const int divisor)
 int processCommand(const char* const cmd, const char* const arg)
 {
     if (strcmp(cmd, "SET") == 0) {
-        int val = atoi(arg);
+        const int val = atoi(arg);
         setMotorSpeed((uint16_t)val);
         return val;
     }
@@ -51,7 +51,7 @@ int processCommand(const char* const cmd, const char* const arg)
 
 int processor(const char* const cmd, const char* const arg)
 {
-    uint16_t sensor = readSensor();
-    int control = computeControl(sensor, 0); 
+    const uint16_t sensor = readSensor();
+    const int control = computeControl(sensor, 0); 
     return processCommand(cmd, arg) + control;
 }
