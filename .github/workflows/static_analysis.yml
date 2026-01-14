@@ -56,6 +56,7 @@ jobs:
       shell: bash
       run: |
         set -euo pipefail
+
         ANALYZER_CMD=("cpptestcli" "-fail" "-compiler" "gcc_13-64" "-config" "MISRA C++ and CERT.properties" "-property" "report.format=html,sarif" "-report" "reports" "-exclude" "*/build/*" "-exclude" "*/*_test.*" "-module" "." "-input" "build/compile_commands.json")  # customize
         MAX_PASSES="${MAX_PASSES:-3}"
         BRANCH_CREATED=false
@@ -147,7 +148,7 @@ jobs:
               echo "Do not attempt to build, run the project or run C/C++test static analysis!" 
               echo "Make the smallest changes possible to fix the reported violations."
               echo "Once you are done, please create a commit comment with a concise message summarizing the changes made to fix the violations."
-              echo "Please put the commit comment in a file named $rule_commit_comment.txt"
+              echo "Please put the "
             } > "$prompt_file"
 
             # Run Codex with write access to the workspace.
@@ -230,14 +231,12 @@ jobs:
         PR_NUMBER: ${{ github.event.pull_request.number }}
         PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
         PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        BASE_REPO: ${{ github.repository }}
       run: |
         set -euo pipefail
 
         # Gate: only run for same-repo PRs (avoid forks)
-        HEAD_REPO="${{ github.event.pull_request.head.repo.full_name }}"
-        BASE_REPO="${{ github.repository }}"
-        echo "Head repo: ${HEAD_REPO}"
-        echo "Base repo: ${BASE_REPO}"
         if [[ "$HEAD_REPO" != "$BASE_REPO" ]]; then
           echo "Fork PR detected ($HEAD_REPO). Skipping branch/PR creation."
           echo "created=false" >> "$GITHUB_OUTPUT"
