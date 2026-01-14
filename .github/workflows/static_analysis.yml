@@ -55,8 +55,6 @@ jobs:
         PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
       shell: bash
       run: |
-        trap 'cp "$0" /tmp/failed-script1.sh' ERR
-
         set -euo pipefail
 
         ANALYZER_CMD=("cpptestcli" "-fail" "-compiler" "gcc_13-64" "-config" "MISRA C++ and CERT.properties" "-property" "report.format=html,sarif" "-report" "reports" "-exclude" "*/build/*" "-exclude" "*/*_test.*" "-module" "." "-input" "build/compile_commands.json")  # customize
