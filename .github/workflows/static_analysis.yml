@@ -68,14 +68,6 @@ jobs:
         rm -fr reports
         mkdir -p reports
         
-        #Skip the step if there is no possiblity to push changes back (i.e., forked PR)
-        if [[ "$HEAD_REPO" != "$BASE_REPO" ]]; then
-          echo "Fork PR detected ($HEAD_REPO)."
-          echo "Wont be able to preserv modified code. Skipping Static analysis and AI fixes."
-          echo "created=false" >> "$GITHUB_OUTPUT"
-          exit 0
-        fi
-
         # Function to create a branch for AI fixes
         create_fix_branch() {
           # Gate: only run for same-repo PRs (avoid forks)
