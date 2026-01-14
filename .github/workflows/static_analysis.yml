@@ -160,10 +160,10 @@ jobs:
               fi
               
               git add -A
-              git commit -F $rule_commit_comment.txt
+              git commit -F ${rule}_commit_comment.txt
 
               # Cleanup temporary files for the iteration
-              rm -f "$prompt_file" "$rule_commit_comment.txt"
+              rm -f "$prompt_file" "${rule}_commit_comment.txt"
 
             else
               echo "No AI changes detected for the $rule violations."
