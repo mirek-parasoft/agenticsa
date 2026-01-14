@@ -59,7 +59,9 @@ jobs:
 
         ANALYZER_CMD=("cpptestcli" "-fail" "-compiler" "gcc_13-64" "-config" "MISRA C++ and CERT.properties" "-property" "report.format=html,sarif" "-report" "reports" "-exclude" "*/build/*" "-exclude" "*/*_test.*" "-module" "." "-input" "build/compile_commands.json")  # customize
         MAX_PASSES="${MAX_PASSES:-3}"
+
         BRANCH_CREATED=false
+        NO_VIOLATIONS=false
 
         # Ensure we are in a git repo (Codex safety requirement unless you bypass explicitly).
         git rev-parse --is-inside-work-tree >/dev/null  2>&1 || { echo "Not inside a git repository. Exiting."; exit 1; }
@@ -107,7 +109,8 @@ jobs:
           log_file="$(mktemp)"
           if run_analysis "$log_file"; then
             echo "No violations found." >&2
-            exit 0
+            NO_VIOLATIONS=true
+            break
           fi
 
           echo "Violations detected; invoking Codex..." >&2
@@ -204,7 +207,14 @@ jobs:
           echo "fix_pr_url=$FIX_PR_URL" >> "$GITHUB_OUTPUT"
         fi
         
-        # Final analysis to check if violations remain
+        # In case we exited the loop because no violations remain
+        if [[ "$NO_VIOLATIONS" == true ]]; then
+          echo "No violations detected; exiting cleanly." >&2
+          exit 0
+        fi
+
+        # Final analysis to check if violations remain when loop exited due to max passes
+        echo "Max passes ($MAX_PASSES) reached; performing final analysis check." >&2
         if run_analysis "$log_file"; then
           echo "All violations fixed after $pass passes." >&2
           exit 0
