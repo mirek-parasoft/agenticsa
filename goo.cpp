@@ -39,7 +39,7 @@ int computeControl(const int sensor, const int divisor)
     return value;
 }
 
-int processCommand(const char* cmd, const char* arg)
+int processCommand(const char* const cmd, const char* const arg)
 {
     if (strcmp(cmd, "SET") == 0) {
         char* end = NULL;
@@ -57,7 +57,7 @@ int processCommand(const char* cmd, const char* arg)
     return -1; 
 }
 
-int processor(const char* cmd, const char* arg)
+int processor(const char* const cmd, const char* const arg)
 {
     const uint16_t sensor = readSensor();
     const int control = computeControl(sensor, 0); 
