@@ -234,6 +234,8 @@ jobs:
         HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
         BASE_REPO: ${{ github.repository }}
       run: |
+        trap 'cp "$0" /tmp/failed-script.sh' ERR
+
         set -euo pipefail
 
         # Gate: only run for same-repo PRs (avoid forks)
