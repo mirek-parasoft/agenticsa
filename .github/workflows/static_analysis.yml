@@ -143,14 +143,14 @@ jobs:
             prompt_file="$(mktemp)"
             {
               echo "Please pull the C/C++test violations using the dedicated mcp tool."
-              echo "Please analyze only the violations of the following rule: $rule"
+              echo "Please analyze only the violations of the following rule: ${rule}"
               echo "Use available mcp tools to understand violated static analysis rule."
-              echo "Your task is to edit the files with problems and fix all violations of the $rule reported by C/C++test."
-              echo "Do not analyze or fix other rules violations.""
+              echo "Your task is to edit the files with problems and fix all violations of the ${rule} reported by C/C++test."
+              echo "Do not analyze or fix other rules violations."
               echo "Do not attempt to build, run the project or run C/C++test static analysis!" 
               echo "Make the smallest changes possible to fix the reported violations."
               echo "Once you are done, please create a commit comment with a concise message summarizing the changes made to fix the violations."
-              echo "Please put the "
+              echo "Please put the commit message in a file named ${rule}_commit_comment.txt"
             } > "$prompt_file"
 
             # Run Codex with write access to the workspace.
