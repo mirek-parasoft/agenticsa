@@ -38,9 +38,13 @@ int computeControl(const int sensor, const int divisor)
 int processCommand(const char* const cmd, const char* const arg)
 {
     if (strcmp(cmd, "SET") == 0) {
-        const int val = atoi(arg);
+        char* endptr = NULL;
+        long val = strtol(arg, &endptr, 10);
+        if (endptr == arg) {
+            val = 0;
+        }
         setMotorSpeed((uint16_t)val);
-        return val;
+        return (int)val;
     }
 
     if (strcmp(cmd, "READ") == 0) {
