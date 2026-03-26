@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdint.h>
 #include <stdlib.h>  
 #include <string.h>  
@@ -38,7 +39,14 @@ int computeControl(const int sensor, const int divisor)
 int processCommand(const char* const cmd, const char* const arg)
 {
     if (strcmp(cmd, "SET") == 0) {
-        const int val = atoi(arg);
+        char* endptr = NULL;
+        int val = 0;
+        errno = 0;
+        const long parsed = strtol(arg, &endptr, 10);
+        if ((endptr != arg) && (*endptr == '\0') && (errno == 0) &&
+            (parsed >= 0) && (parsed <= UINT16_MAX)) {
+            val = (int)parsed;
+        }
         setMotorSpeed((uint16_t)val);
         return val;
     }
