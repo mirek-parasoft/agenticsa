@@ -52,6 +52,6 @@ int processCommand(const char* const cmd, const char* const arg)
 int processor(char* const cmd, char* const arg)
 {
     const uint16_t sensor = readSensor();
-    const int control = computeControl(sensor, 0); 
+    const int control = computeControl(sensor, 1); 
     return processCommand(cmd, arg) + control;
 }
