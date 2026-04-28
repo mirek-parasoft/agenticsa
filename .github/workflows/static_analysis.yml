@@ -57,7 +57,7 @@ jobs:
       run: |
         set -euo pipefail
 
-        ANALYZER_CMD=("cpptestcli" "-fail" "-compiler" "gcc_13-64" "-config" "MISRA C++ and CERT.properties" "-property" "report.format=html,sarif" "-report" "reports" "-exclude" "*/build/*" "-exclude" "*/*_test.*" "-module" "." "-input" "build/compile_commands.json")  # customize
+        ANALYZER_CMD=("cpptestcli" "-fail" "-compiler" "gcc_13-64" "-config" "CI Static Analysis.properties" "-property" "report.format=html,sarif" "-report" "reports" "-exclude" "*/build/*" "-exclude" "*/*_test.*" "-module" "." "-input" "build/compile_commands.json")  # customize
         MAX_PASSES="${MAX_PASSES:-3}"
 
         BRANCH_CREATED=false

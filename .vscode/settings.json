@@ -1,4 +1,4 @@
 {
-    "cpptest.testConfiguration": "MISRA C++ and CERT.properties",
+    "cpptest.testConfiguration": "Local Static Analysis.properties",
     "cpptest.commandLinePattern": "cpptestcli ${stopFile} ${compilerConfig} ${testConfig} ${reportDir} ${selectedFiles} -exclude */.build/* -exclude */*_test.* -module . -input .build/compile_commands.json"
 }
