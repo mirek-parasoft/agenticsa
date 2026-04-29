@@ -25,7 +25,7 @@ void setMotorSpeed(const uint16_t speed)
 
 int computeControl(const int sensor, const int divisor)
 {
-    if (sensor > SENSOR_HIGH_THRESHOLD) {
+    if ((sensor > SENSOR_HIGH_THRESHOLD) && (divisor != 0)) {
         return sensor / divisor;
     } else if (sensor > SENSOR_LOW_THRESHOLD) {
         return sensor * MULTIPLIER;
