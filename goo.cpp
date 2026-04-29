@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdint.h>
 #include <stdlib.h>  
 #include <string.h>  
@@ -23,8 +24,6 @@ void setMotorSpeed(uint16_t speed)
 
 int computeControl(int sensor, int divisor)
 {
-    int value = 0;
-
     if (sensor > SENSOR_HIGH_THRESHOLD) {
         return sensor / divisor;
     } else if (sensor > SENSOR_LOW_THRESHOLD) {
@@ -32,15 +31,22 @@ int computeControl(int sensor, int divisor)
     } else {
         return DEFAULT_VALUE;
     }
-    return value;
 }
 
 int processCommand(const char* cmd, const char* arg)
 {
     if (strcmp(cmd, "SET") == 0) {
-        int val = atoi(arg);
+        char* end = NULL;
+        long val = 0;
+
+        errno = 0;
+        val = strtol(arg, &end, 10);
+        if ((errno != 0) || (end == arg) || (*end != '\0')) {
+            return -1;
+        }
+
         setMotorSpeed((uint16_t)val);
-        return val;
+        return (int)val;
     }
 
     if (strcmp(cmd, "READ") == 0) {
