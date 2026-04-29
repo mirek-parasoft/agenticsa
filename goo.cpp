@@ -36,7 +36,7 @@ int computeControl(const int sensor, const int divisor)
     }
 }
 
-int processCommand(const char* cmd, const char* arg)
+int processCommand(const char* const cmd, const char* const arg)
 {
     if (strcmp(cmd, "SET") == 0) {
         char* end = NULL;
